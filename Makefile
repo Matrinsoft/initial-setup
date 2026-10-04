@@ -110,7 +110,13 @@ local: po-pull ChangeLog
 	@cd /tmp/$(PKGNAME)-$(VERSION) ; $(PYTHON) -m build --sdist --no-isolation
 	@archive=$$(find /tmp/$(PKGNAME)-$(VERSION)/dist -maxdepth 1 -type f -name '*.tar.gz' -print -quit); \
 	test -n "$$archive"; \
-	cp "$$archive" "$(PKGNAME)-$(VERSION).tar.gz"
+	tmp=$$(mktemp -d); \
+	tar -xzf "$$archive" -C "$$tmp"; \
+	root=$$(find "$$tmp" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' -quit); \
+	test -n "$$root"; \
+	if [ "$$root" != "$(PKGNAME)-$(VERSION)" ]; then mv "$$tmp/$$root" "$$tmp/$(PKGNAME)-$(VERSION)"; fi; \
+	tar -czf "$(PKGNAME)-$(VERSION).tar.gz" -C "$$tmp" "$(PKGNAME)-$(VERSION)"; \
+	rm -rf "$$tmp"
 	@rm -rf /tmp/$(PKGNAME)-$(VERSION)
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
