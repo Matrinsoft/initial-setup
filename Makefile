@@ -108,7 +108,9 @@ local: po-pull ChangeLog
 	@rm -rf /tmp/$(PKGNAME)-$(VERSION) /tmp/$(PKGNAME)
 	@dir=$$PWD; cp -a $$dir /tmp/$(PKGNAME)-$(VERSION)
 	@cd /tmp/$(PKGNAME)-$(VERSION) ; $(PYTHON) -m build --sdist --no-isolation
-	@cp /tmp/$(PKGNAME)-$(VERSION)/dist/$(PKGNAME)-$(VERSION).tar.gz .
+	@archive=$$(find /tmp/$(PKGNAME)-$(VERSION)/dist -maxdepth 1 -type f -name '*.tar.gz' -print -quit); \
+	test -n "$$archive"; \
+	cp "$$archive" "$(PKGNAME)-$(VERSION).tar.gz"
 	@rm -rf /tmp/$(PKGNAME)-$(VERSION)
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
